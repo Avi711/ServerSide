@@ -1,4 +1,16 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using ServerSide.Data;
+using Microsoft.Extensions.Configuration;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<ServerSideContext>(options =>
+
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ServerSideContext") ?? throw new InvalidOperationException("Connection string 'ServerSideContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -22,6 +34,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Ratings}/{action=Index}/{id?}");
 
 app.Run();
