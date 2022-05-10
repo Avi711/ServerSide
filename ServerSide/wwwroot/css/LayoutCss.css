@@ -7,7 +7,6 @@
 
 .background {
     background-color: rgb(18, 140, 126);
-    background-color: peru;
     height: 20rem;
     margin: -40;
 }
@@ -17,8 +16,8 @@
     box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
     border-radius: 0.5cm;
     padding: 2rem;
-    width: 45%;
-    margin-top: -150px;
+    /*    width: 70%;
+*/ margin-top: -150px;
     margin-bottom: 10%;
     max-width: 700px;
 }
@@ -30,3 +29,76 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.webButton {
+    background-color: rgb(18, 140, 126);
+    color: white;
+}
+
+.title {
+    text-align: center;
+    font-size: x-large;
+    font-weight: bold;
+    font-family: Arial;
+    padding-bottom: 2rem;
+}
+
+.logo {
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 13%;
+    text-align: center;
+}
+
+.rate-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.rating {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%) rotateY(180deg);
+    display: flex;
+}
+
+.rating input {
+    display: none;
+    }
+
+.rating label {
+        display: block;
+        cursor: pointer;
+        width: 50px;
+    }
+
+.rating label:before {
+            font-family: fontAwesome;
+            position: relative;
+            display: block;
+            font-size: 50px;
+            color: #101010;
+        }
+
+    .rating label:after {
+        font-family: Arial;
+        position: absolute;
+        display: block;
+        font-size: 50px;
+        color: #fd4;
+        top: 0;
+        opacity: 0;
+        transition: 0.5s;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+.rating label:hover:after,
+.rating label:hover ~ label::after,
+.rating input:checked ~ label:after {
+            opacity: 1;
+        }

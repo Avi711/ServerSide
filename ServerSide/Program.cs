@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ServerSide.Data;
 using Microsoft.Extensions.Configuration;
 using System;
+using ServerSide.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddDbContext<ServerSideContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<RatingService>();
 
 var app = builder.Build();
 

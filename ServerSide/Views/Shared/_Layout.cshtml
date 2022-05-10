@@ -6,22 +6,20 @@
 	<title>@ViewData["Title"] - ServerSide</title>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/LayoutCss.css" />
+	<link rel="stylesheet" href="~/css/LayoutCss.css" type="text/css" />
 	<link rel="stylesheet" href="~/ServerSide.styles.css" asp-append-version="true" />
 </head>
 <body>
 	<header>
 	</header>
-	<div class="container">
-		<div className="row background">
-			aaaaaa
+		<div class="row background">
+			<span class="logo"><img width="200" src="~/Images/logo.png"></span>
 		</div>
 		<main role="main" class="pb-3">
-			<div className="row my_form center">
+			<div class="row my_form center">
 				@RenderBody()
 			</div>
 		</main>
-	</div>
 
 	<footer class="border-top footer text-muted">
 		<div class="container">
