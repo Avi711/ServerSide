@@ -4,12 +4,10 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Rating</h4>
+<span class="title">Create</span>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4 rate-form">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -32,6 +30,15 @@
                 <input asp-for="rate" class="form-control" />
                 <span asp-validation-for="rate" class="text-danger"></span>
             </div>
+@*                <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+                <div class="rating">
+                <input type="radio" name="star" id="star1"/><label class="fa-solid fa-star" for="star1"></label>
+                <input type="radio" name="star" id="star2"/><label class="fa-solid fa-star" for="star2"></label>
+                <input type="radio" name="star" id="star3"/><label class="fa-solid fa-star" for="star3"></label>
+                <input type="radio" name="star" id="star4"/><label class="fa-solid fa-star" for="star4"></label>
+                <input type="radio" name="star" id="star5"/><label class="fa-solid fa-star" for="star5"></label>
+            </div>*@
+            <br />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

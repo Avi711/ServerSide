@@ -4,13 +4,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<span class="title">Ratings</span>
 
-<h3>Average rate: @ViewBag.average</h3>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<p>Average rate: @ViewBag.average</p>
+<form id="search-form">
+<input name="query" id="search" />
+<input type="submit" value="Search" />
+<br />
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -29,7 +30,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="rateList">
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -53,3 +54,31 @@
 }
     </tbody>
 </table>
+@section Scripts{
+    <script type="text/html" id="template">
+        
+    <tr>
+            <td>
+                {comment}
+            </td>
+            <td>
+                {publishedDate}
+            </td>
+            <td>
+                {name}
+            </td>
+            <td>
+                {rate}
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="{id}">Edit</a> |
+                <a asp-action="Details" asp-route-id="{id}">Details</a> |
+                <a asp-action="Delete" asp-route-id="{id}">Delete</a>
+            </td>
+        </tr>
+    </script>
+    <script src="~/js/search.js"></script>
+}
+<p>
+    <a class="btn webButton" asp-action="Create">Create New</a>
+</p>

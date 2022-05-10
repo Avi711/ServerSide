@@ -31,6 +31,16 @@ namespace ServerSide.Controllers
             return View(_context.GetAll());
         }
 
+        public IActionResult Search(string query)
+        {
+            if(query == null) 
+                return Json(_context.GetAll());
+            var q = _context.GetAll().Where(r => r.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                                                 r.Comment.Contains(query, StringComparison.OrdinalIgnoreCase));
+            return Json(q.ToList());
+        }
+
+
         // GET: Ratings/Details/5
         public IActionResult Details(int? id)
         {
