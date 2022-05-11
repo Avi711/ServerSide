@@ -21,5 +21,11 @@ namespace ServerSide.Data
         {
             throw new NotImplementedException();
         }
+
+        public DbSet<ServerSide.Models.User> User { get; set; }
+
+        public DbSet<ServerSide.Models.contact> contact { get; set; }
+
+        public DbSet<ServerSide.Models.message> message { get; set; }
     }
 }

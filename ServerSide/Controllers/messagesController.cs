@@ -10,85 +10,85 @@ using ServerSide.Models;
 
 namespace ServerSide.Controllers
 {
-    public class UsersController : Controller
+    public class messagesController : Controller
     {
         private readonly ServerSideContext _context;
 
-        public UsersController(ServerSideContext context)
+        public messagesController(ServerSideContext context)
         {
             _context = context;
         }
 
-        // GET: Users
+        // GET: messages
         public async Task<IActionResult> Index()
         {
-              return View(await _context.User.ToListAsync());
+              return View(await _context.message.ToListAsync());
         }
 
-        // GET: Users/Details/5
-        public async Task<IActionResult> Details(string id)
+        // GET: messages/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context.message == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Username == id);
-            if (user == null)
+            var message = await _context.message
+                .FirstOrDefaultAsync(m => m.id == id);
+            if (message == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(message);
         }
 
-        // GET: Users/Create
+        // GET: messages/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Users/Create
+        // POST: messages/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Username,Password,DisplayName,Image")] User user)
+        public async Task<IActionResult> Create([Bind("id,content,created,sent")] message message)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
+                _context.Add(message);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(message);
         }
 
-        // GET: Users/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        // GET: messages/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context.message == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
+            var message = await _context.message.FindAsync(id);
+            if (message == null)
             {
                 return NotFound();
             }
-            return View(user);
+            return View(message);
         }
 
-        // POST: Users/Edit/5
+        // POST: messages/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Username,Password,DisplayName,Image")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("id,content,created,sent")] message message)
         {
-            if (id != user.Username)
+            if (id != message.id)
             {
                 return NotFound();
             }
@@ -97,12 +97,12 @@ namespace ServerSide.Controllers
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(message);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Username))
+                    if (!messageExists(message.id))
                     {
                         return NotFound();
                     }
@@ -113,49 +113,49 @@ namespace ServerSide.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(message);
         }
 
-        // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        // GET: messages/Delete/5
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context.message == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Username == id);
-            if (user == null)
+            var message = await _context.message
+                .FirstOrDefaultAsync(m => m.id == id);
+            if (message == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(message);
         }
 
-        // POST: Users/Delete/5
+        // POST: messages/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.User == null)
+            if (_context.message == null)
             {
-                return Problem("Entity set 'ServerSideContext.User'  is null.");
+                return Problem("Entity set 'ServerSideContext.message'  is null.");
             }
-            var user = await _context.User.FindAsync(id);
-            if (user != null)
+            var message = await _context.message.FindAsync(id);
+            if (message != null)
             {
-                _context.User.Remove(user);
+                _context.message.Remove(message);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(string id)
+        private bool messageExists(int id)
         {
-          return _context.User.Any(e => e.Username == id);
+          return _context.message.Any(e => e.id == id);
         }
     }
 }

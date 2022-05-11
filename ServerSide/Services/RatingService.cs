@@ -33,7 +33,7 @@ namespace ServerSide.Services
             rating.Comment = comment;
             rating.Name = name;
             rating.rate = rate;
-            rating.PublishedDate = DateTime.Now.ToString();
+            rating.PublishedDate = DateTime.Now;
             ratings.Add(rating);
         }
 
@@ -42,7 +42,7 @@ namespace ServerSide.Services
             Rating rating = Get(id);
             rating.Comment = comment;
             rating.rate = rate;
-            rating.PublishedDate = DateTime.Now.ToString();
+            rating.PublishedDate = DateTime.Now;
 
         }
         public void Delete(int id)
