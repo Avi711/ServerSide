@@ -6,6 +6,9 @@ using ServerSide.Data;
 using Microsoft.Extensions.Configuration;
 using System;
 using ServerSide.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,38 @@ builder.Services.AddDbContext<ServerSideContext>(options =>
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<RatingService>();
+
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+    {
+
+    options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JWTParams:Audience"],
+            ValidIssuer = builder.Configuration["JWTParams:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTParams:SecretKey"]))
+        };
+}
+    );
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Allow All", builder =>
+     {
+         builder
+           .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+
+     });
+});
+
+
 
 var app = builder.Build();
 
@@ -30,9 +65,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseCors("Allo All");
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
