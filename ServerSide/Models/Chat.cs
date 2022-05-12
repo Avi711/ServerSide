@@ -4,20 +4,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ServerSide.Models
 {
-    public class Contact
+    public class Chat
     {
-   
-        public string id { get; set; }
+        public int id { get; set; }
 
         [Required]
         public string name { get; set; }
 
         [Required]
+        public string displayname { get; set; }
+
+        [Required]
         public string server { get; set; }
 
-        public string last { get; set; }
-
-        public DateTime lastdate { get; set; }
+        public List<Message> messages { get; set; }
 
     }
 }

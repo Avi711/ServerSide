@@ -17,6 +17,6 @@ namespace ServerSide.Models
 
         public string Image { get; set; }
 
-        public List<contact> contacts { get; set; }
+        public List<Chat> Chats { get; set; }
     }
 }

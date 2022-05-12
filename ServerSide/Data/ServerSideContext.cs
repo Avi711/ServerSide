@@ -24,8 +24,10 @@ namespace ServerSide.Data
 
         public DbSet<ServerSide.Models.User> User { get; set; }
 
-        public DbSet<ServerSide.Models.contact> contact { get; set; }
+        public DbSet<ServerSide.Models.Contact> Contact { get; set; }
 
-        public DbSet<ServerSide.Models.message> message { get; set; }
+        public DbSet<ServerSide.Models.Message> Message { get; set; }
+
+        public DbSet<ServerSide.Models.Chat> Chat { get; set; }
     }
 }
