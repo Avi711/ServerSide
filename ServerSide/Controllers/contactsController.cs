@@ -14,11 +14,11 @@ namespace ServerSide.Controllers
     [ApiController]
     [Route("api/[controller]")]
 
-    public class contactsController : Controller
+    public class ContactsController : Controller
     {
         private readonly ServerSideContext _context;
 
-        public contactsController(ServerSideContext context)
+        public ContactsController(ServerSideContext context)
         {
             _context = context;
         }
