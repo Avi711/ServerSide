@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ServerSide.Models
 {
-    public class message
+    public class Message
     {
 
 

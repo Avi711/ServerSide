@@ -29,7 +29,16 @@ namespace ServerSide.Controllers
         {
             User curUser = await getCurrentUserAsync();
             if (curUser != null)
-                return Json(curUser.contacts.ToList());
+            {
+                List <Contact> contacts = new List<Contact>();
+
+                curUser.Chats.ForEach(c =>
+                {
+                    contacts.Add(buildContact(c));
+                });
+
+                return Json(contacts);
+            }
             return BadRequest("You are not logged in");
         }
 
@@ -44,11 +53,10 @@ namespace ServerSide.Controllers
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return BadRequest("You are not logged in");
-            var contacts = curUser.contacts;
-            var contact = contacts.FirstOrDefault(m => m.id == id);
-            if (contact == null)
+            Chat chat = curUser.Chats.Where(chat => chat.name == id).FirstOrDefault();
+            if (chat == null)
                 return NotFound("No such contact");
-            return Json(contact);
+            return Json(buildContact(chat));
 
         }
 
@@ -64,19 +72,25 @@ namespace ServerSide.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,name,server")] contact contact)
+        public async Task<IActionResult> Create([Bind("id,name,server")] Contact contact)
         {
 
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return BadRequest("You are not logged in");
-            contact temp = _context.contact.FirstOrDefault(m => m.id == contact.id);
-            if (temp != null)
-                curUser.contacts.Add(temp);
-            else
-                curUser.contacts.Add(contact);
-            //_context.Update(curUser);
-            //_context.User.Update(curUser);
+            Chat c = curUser.Chats.Where(c => c.name == contact.id).FirstOrDefault();
+            if (c != null)
+                return BadRequest("Contact Already exists");
+            Chat chat = new Chat();
+            int nextId = 2;
+            //if (_context.Chat.CountAsync().Result > 0)
+            //    nextId = _context.Chat.MaxAsync(x => x.id).Id + 1;
+            chat.id = nextId;
+            chat.name = contact.id;
+            chat.displayname = contact.name;
+            chat.server = contact.server;
+            curUser.Chats.Add(chat);
+            //await _context.Chat.AddAsync(chat);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -92,13 +106,14 @@ namespace ServerSide.Controllers
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return BadRequest("You are not logged in");
-            var contact = curUser.contacts.FirstOrDefault(m => m.id == id);
-            if (contact == null)
+
+            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+            if (chat == null)
                 return NotFound("No such contact");
-            if(name != null)
-                contact.name = name;
-            if(server != null)
-                contact.server = server;
+            if (name != null)
+                chat.displayname = name;
+            if (server != null)
+                chat.server = server;
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -108,7 +123,7 @@ namespace ServerSide.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         //[HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("id,name,server,last,lastdate")] contact contact)
+        public async Task<IActionResult> Edit(string id, [Bind("id,name,server,last,lastdate")] Contact contact)
         {
             if (id != contact.id)
             {
@@ -141,12 +156,12 @@ namespace ServerSide.Controllers
         // GET: contacts/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.contact == null)
+            if (id == null || _context.Contact == null)
             {
                 return NotFound();
             }
 
-            var contact = await _context.contact
+            var contact = await _context.Contact
                 .FirstOrDefaultAsync(m => m.id == id);
             if (contact == null)
             {
@@ -161,14 +176,14 @@ namespace ServerSide.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.contact == null)
+            if (_context.Contact == null)
             {
                 return Problem("Entity set 'ServerSideContext.contact'  is null.");
             }
-            var contact = await _context.contact.FindAsync(id);
+            var contact = await _context.Contact.FindAsync(id);
             if (contact != null)
             {
-                _context.contact.Remove(contact);
+                _context.Contact.Remove(contact);
             }
 
             await _context.SaveChangesAsync();
@@ -177,7 +192,7 @@ namespace ServerSide.Controllers
 
         private bool contactExists(string id)
         {
-            return _context.contact.Any(e => e.id == id);
+            return _context.Contact.Any(e => e.id == id);
         }
 
 
@@ -188,9 +203,26 @@ namespace ServerSide.Controllers
             {
                 var userClaims = user.Claims;
                 string name = userClaims.FirstOrDefault(o => o.Type == "UserId").Value;
-                return await _context.User.Where(u => u.Username == name).Include(x => x.contacts).FirstOrDefaultAsync();
+                return await _context.User.Where(u => u.Username == name).Include(x => x.Chats).FirstOrDefaultAsync();
             }
             return null;
+        }
+
+        private Contact buildContact(Chat chat)
+        {
+            Contact temp = new Contact();
+            if (chat != null)
+            {
+                temp.id = chat.name;
+                temp.name = chat.displayname;
+                temp.server = chat.server;
+                if (chat.messages.Count > 0)
+                {
+                    temp.last = chat.messages.LastOrDefault().content;
+                    temp.lastdate = chat.messages.FirstOrDefault().created;
+                }
+            }
+            return temp;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ServerSide.Models.Contact>
+﻿@model IEnumerable<ServerSide.Models.Chat>
 
 @{
     ViewData["Title"] = "Index";
@@ -16,13 +16,10 @@
                 @Html.DisplayNameFor(model => model.name)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.displayname)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.server)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.last)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.lastdate)
             </th>
             <th></th>
         </tr>
@@ -34,13 +31,10 @@
                 @Html.DisplayFor(modelItem => item.name)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.displayname)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.server)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.last)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.lastdate)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |

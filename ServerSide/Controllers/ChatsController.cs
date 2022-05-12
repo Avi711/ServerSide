@@ -10,85 +10,85 @@ using ServerSide.Models;
 
 namespace ServerSide.Controllers
 {
-    public class MessagesController : Controller
+    public class ChatsController : Controller
     {
         private readonly ServerSideContext _context;
 
-        public MessagesController(ServerSideContext context)
+        public ChatsController(ServerSideContext context)
         {
             _context = context;
         }
 
-        // GET: Messages
+        // GET: Chats
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Message.ToListAsync());
+              return View(await _context.Chat.ToListAsync());
         }
 
-        // GET: Messages/Details/5
+        // GET: Chats/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Message == null)
+            if (id == null || _context.Chat == null)
             {
                 return NotFound();
             }
 
-            var message = await _context.Message
+            var chat = await _context.Chat
                 .FirstOrDefaultAsync(m => m.id == id);
-            if (message == null)
+            if (chat == null)
             {
                 return NotFound();
             }
 
-            return View(message);
+            return View(chat);
         }
 
-        // GET: Messages/Create
+        // GET: Chats/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Messages/Create
+        // POST: Chats/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,content,created,sent")] Message message)
+        public async Task<IActionResult> Create([Bind("id,name,displayname,server")] Chat chat)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(message);
+                _context.Add(chat);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(message);
+            return View(chat);
         }
 
-        // GET: Messages/Edit/5
+        // GET: Chats/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Message == null)
+            if (id == null || _context.Chat == null)
             {
                 return NotFound();
             }
 
-            var message = await _context.Message.FindAsync(id);
-            if (message == null)
+            var chat = await _context.Chat.FindAsync(id);
+            if (chat == null)
             {
                 return NotFound();
             }
-            return View(message);
+            return View(chat);
         }
 
-        // POST: Messages/Edit/5
+        // POST: Chats/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,content,created,sent")] Message message)
+        public async Task<IActionResult> Edit(int id, [Bind("id,name,displayname,server")] Chat chat)
         {
-            if (id != message.id)
+            if (id != chat.id)
             {
                 return NotFound();
             }
@@ -97,12 +97,12 @@ namespace ServerSide.Controllers
             {
                 try
                 {
-                    _context.Update(message);
+                    _context.Update(chat);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MessageExists(message.id))
+                    if (!ChatExists(chat.id))
                     {
                         return NotFound();
                     }
@@ -113,49 +113,49 @@ namespace ServerSide.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(message);
+            return View(chat);
         }
 
-        // GET: Messages/Delete/5
+        // GET: Chats/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Message == null)
+            if (id == null || _context.Chat == null)
             {
                 return NotFound();
             }
 
-            var message = await _context.Message
+            var chat = await _context.Chat
                 .FirstOrDefaultAsync(m => m.id == id);
-            if (message == null)
+            if (chat == null)
             {
                 return NotFound();
             }
 
-            return View(message);
+            return View(chat);
         }
 
-        // POST: Messages/Delete/5
+        // POST: Chats/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Message == null)
+            if (_context.Chat == null)
             {
-                return Problem("Entity set 'ServerSideContext.message'  is null.");
+                return Problem("Entity set 'ServerSideContext.Chat'  is null.");
             }
-            var message = await _context.Message.FindAsync(id);
-            if (message != null)
+            var chat = await _context.Chat.FindAsync(id);
+            if (chat != null)
             {
-                _context.Message.Remove(message);
+                _context.Chat.Remove(chat);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MessageExists(int id)
+        private bool ChatExists(int id)
         {
-          return _context.Message.Any(e => e.id == id);
+          return _context.Chat.Any(e => e.id == id);
         }
     }
 }
