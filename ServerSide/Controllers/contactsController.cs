@@ -16,16 +16,16 @@ namespace ServerSide.Controllers
 
     public class ContactsController : Controller
     {
-        private readonly ServerSideContext _context;
+        private readonly UserList _context;
 
         public ContactsController(ServerSideContext context)
         {
-            _context = context;
+            //_context = context;
+            _context = UserList.GetInstance();
         }
 
-        // GET: contacts
         [HttpGet]
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> GetAllContacts()
         {
             User curUser = await getCurrentUserAsync();
             if (curUser != null)
@@ -42,9 +42,8 @@ namespace ServerSide.Controllers
             return BadRequest("You are not logged in");
         }
 
-        // GET: contacts/Details/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> ContactDetails(string id)
         {
             if (id == null)
             {
@@ -60,19 +59,9 @@ namespace ServerSide.Controllers
 
         }
 
-        // GET: contacts/Create
-        //[HttpPost]
-        public IActionResult Create()
-        {
-            return View();
-        }
 
-        // POST: contacts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,name,server")] Contact contact)
+        public async Task<IActionResult> CreateContact([Bind("id,name,server")] Contact contact)
         {
 
             User curUser = await getCurrentUserAsync();
@@ -91,17 +80,57 @@ namespace ServerSide.Controllers
             chat.server = contact.server;
             curUser.Chats.Add(chat);
             //await _context.Chat.AddAsync(chat);
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
             return Ok();
         }
 
-        // GET: contacts/Edit/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(string id, string name, string server)
+        public async Task<IActionResult> EditContact([Bind("id,name,server")] Contact contact)
+        {
+            if (contact.id == null)
+            {
+                return NotFound();
+            }
+            User curUser = await getCurrentUserAsync();
+            if (curUser == null)
+                return BadRequest("You are not logged in");
+
+            Chat chat = curUser.Chats.Where(c => c.name == contact.id).FirstOrDefault();
+            if (chat == null)
+                return NotFound("No such contact");
+            if (contact.name != null)
+                chat.displayname = contact.name;
+            if (contact.server != null)
+                chat.server = contact.server;
+            //await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteContact(string id)
+        {
+
+            if (id == null)
+            {
+                return NotFound("id is null");
+            }
+            User curUser = await getCurrentUserAsync();
+            if (curUser == null)
+                return BadRequest("You are not logged in");
+            Chat chat = curUser.Chats.Where(u => u.name == id).FirstOrDefault();
+            if(chat == null)
+                return NotFound("There is no such user");
+            curUser.Chats.Remove(chat);
+            return Ok();
+        }
+
+
+        [HttpGet("{id}/messages")]
+        public async Task<IActionResult> GetAllMessages(string id)
         {
             if (id == null)
             {
-                return NotFound();
+                return NotFound("id is null");
             }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
@@ -110,91 +139,33 @@ namespace ServerSide.Controllers
             Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
             if (chat == null)
                 return NotFound("No such contact");
-            if (name != null)
-                chat.displayname = name;
-            if (server != null)
-                chat.server = server;
-            await _context.SaveChangesAsync();
+            if (chat.messages == null)
+                return Json(new List<Message>());
+            return Json(chat.messages);
+        }
+
+        [HttpPost("{id}/messages")]
+        public async Task<IActionResult> CreateMessage(string id, [Bind("content")] Message message)
+        {
+            if (id == null)
+            {
+                return NotFound("id is null");
+            }
+            User curUser = await getCurrentUserAsync();
+            if (curUser == null)
+                return BadRequest("You are not logged in");
+
+            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+            if (chat == null)
+                return NotFound("No such contact");
+            message.id = 5;
+            message.sent = false;
+            message.created = DateTime.Now;
+            if (chat.messages == null)
+                chat.messages = new List<Message>();
+            chat.messages.Add(message);
             return Ok();
         }
-
-        // POST: contacts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("id,name,server,last,lastdate")] Contact contact)
-        {
-            if (id != contact.id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(contact);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!contactExists(contact.id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(IndexAsync));
-            }
-            return View(contact);
-        }
-
-        // GET: contacts/Delete/5
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null || _context.Contact == null)
-            {
-                return NotFound();
-            }
-
-            var contact = await _context.Contact
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (contact == null)
-            {
-                return NotFound();
-            }
-
-            return View(contact);
-        }
-
-        // POST: contacts/Delete/5
-        [HttpDelete("{id}")]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            if (_context.Contact == null)
-            {
-                return Problem("Entity set 'ServerSideContext.contact'  is null.");
-            }
-            var contact = await _context.Contact.FindAsync(id);
-            if (contact != null)
-            {
-                _context.Contact.Remove(contact);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(IndexAsync));
-        }
-
-        private bool contactExists(string id)
-        {
-            return _context.Contact.Any(e => e.id == id);
-        }
-
 
         private async Task<User> getCurrentUserAsync()
         {
@@ -203,7 +174,9 @@ namespace ServerSide.Controllers
             {
                 var userClaims = user.Claims;
                 string name = userClaims.FirstOrDefault(o => o.Type == "UserId").Value;
-                return await _context.User.Where(u => u.Username == name).Include(x => x.Chats).FirstOrDefaultAsync();
+                //return await _context.User.Where(u => u.Username == name).Include(x => x.Chats).FirstOrDefaultAsync();
+                return _context.Items.Where(u => u.Username == name).FirstOrDefault();
+                
             }
             return null;
         }
@@ -216,7 +189,7 @@ namespace ServerSide.Controllers
                 temp.id = chat.name;
                 temp.name = chat.displayname;
                 temp.server = chat.server;
-                if (chat.messages.Count > 0)
+                if (chat.messages != null && chat.messages.Count > 0)
                 {
                     temp.last = chat.messages.LastOrDefault().content;
                     temp.lastdate = chat.messages.FirstOrDefault().created;
