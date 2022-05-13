@@ -22,12 +22,39 @@ namespace ServerSide.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("ServerSide.Models.contact", b =>
+            modelBuilder.Entity("ServerSide.Models.Chat", b =>
                 {
-                    b.Property<string>("id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
 
                     b.Property<string>("Username")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("displayname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("server")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("Username");
+
+                    b.ToTable("Chat");
+                });
+
+            modelBuilder.Entity("ServerSide.Models.Contact", b =>
+                {
+                    b.Property<string>("id")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("last")
@@ -46,12 +73,10 @@ namespace ServerSide.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Username");
-
-                    b.ToTable("contact");
+                    b.ToTable("Contact");
                 });
 
-            modelBuilder.Entity("ServerSide.Models.message", b =>
+            modelBuilder.Entity("ServerSide.Models.Message", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -59,8 +84,8 @@ namespace ServerSide.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
 
-                    b.Property<string>("contactid")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("Chatid")
+                        .HasColumnType("int");
 
                     b.Property<string>("content")
                         .IsRequired()
@@ -74,9 +99,9 @@ namespace ServerSide.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("contactid");
+                    b.HasIndex("Chatid");
 
-                    b.ToTable("message");
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("ServerSide.Models.Rating", b =>
@@ -125,28 +150,28 @@ namespace ServerSide.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("ServerSide.Models.contact", b =>
+            modelBuilder.Entity("ServerSide.Models.Chat", b =>
                 {
                     b.HasOne("ServerSide.Models.User", null)
-                        .WithMany("contacts")
+                        .WithMany("Chats")
                         .HasForeignKey("Username");
                 });
 
-            modelBuilder.Entity("ServerSide.Models.message", b =>
+            modelBuilder.Entity("ServerSide.Models.Message", b =>
                 {
-                    b.HasOne("ServerSide.Models.contact", null)
+                    b.HasOne("ServerSide.Models.Chat", null)
                         .WithMany("messages")
-                        .HasForeignKey("contactid");
+                        .HasForeignKey("Chatid");
                 });
 
-            modelBuilder.Entity("ServerSide.Models.contact", b =>
+            modelBuilder.Entity("ServerSide.Models.Chat", b =>
                 {
                     b.Navigation("messages");
                 });
 
             modelBuilder.Entity("ServerSide.Models.User", b =>
                 {
-                    b.Navigation("contacts");
+                    b.Navigation("Chats");
                 });
 #pragma warning restore 612, 618
         }

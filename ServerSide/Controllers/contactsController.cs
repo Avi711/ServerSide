@@ -71,9 +71,10 @@ namespace ServerSide.Controllers
             if (c != null)
                 return BadRequest("Contact Already exists");
             Chat chat = new Chat();
-            int nextId = 2;
+            int nextId = _context.ChatId++;
             //if (_context.Chat.CountAsync().Result > 0)
             //    nextId = _context.Chat.MaxAsync(x => x.id).Id + 1;
+
             chat.id = nextId;
             chat.name = contact.id;
             chat.displayname = contact.name;
@@ -158,7 +159,7 @@ namespace ServerSide.Controllers
             Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
             if (chat == null)
                 return NotFound("No such contact");
-            message.id = 5;
+            message.id = _context.MessageId++;
             message.sent = false;
             message.created = DateTime.Now;
             if (chat.messages == null)
@@ -174,7 +175,7 @@ namespace ServerSide.Controllers
             {
                 var userClaims = user.Claims;
                 string name = userClaims.FirstOrDefault(o => o.Type == "UserId").Value;
-                //return await _context.User.Where(u => u.Username == name).Include(x => x.Chats).FirstOrDefaultAsync();
+               // return await _context.User.Where(u => u.Username == name).Include(x => x.Chats).FirstOrDefaultAsync();
                 return _context.Items.Where(u => u.Username == name).FirstOrDefault();
                 
             }

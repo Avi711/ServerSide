@@ -23,6 +23,7 @@ namespace ServerSide.Controllers
 
         public LoginController(IConfiguration config, ServerSideContext context)
         {
+            //_context = context;
             _configuration = config;
             _context = UserList.GetInstance();
         }
