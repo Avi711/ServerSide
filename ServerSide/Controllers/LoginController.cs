@@ -16,13 +16,15 @@ namespace ServerSide.Controllers
     public class LoginController : Controller 
     {
         public IConfiguration _configuration;
-        private readonly ServerSideContext _context;
+        //private readonly ServerSideContext _context;
+        private readonly UserList _context;
+
 
 
         public LoginController(IConfiguration config, ServerSideContext context)
         {
             _configuration = config;
-            _context = context;
+            _context = UserList.GetInstance();
         }
         [AllowAnonymous]
         [HttpPost]
@@ -48,13 +50,15 @@ namespace ServerSide.Controllers
 
                 return Ok(new JwtSecurityTokenHandler().WriteToken(token));
             }
-            return BadRequest();
+            return BadRequest("Username and/or password are incorrect");
 
         }
 
         private User Authenricate(string username, string password)
         {
-            var curUser = _context.User.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() &&
+            //var curUser = _context.User.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() &&
+            //                                                u.Password == password);
+            var curUser = _context.Items.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() &&
                                                             u.Password == password);
             if (curUser != null)
                 return curUser;
