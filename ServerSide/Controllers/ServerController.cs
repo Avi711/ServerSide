@@ -15,21 +15,21 @@ using System.Threading.Tasks;
 namespace ServerSide.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class LoginController : Controller 
+    [Route("api")]
+    public class ServerController : Controller 
     {
         public IConfiguration _configuration;
         //private readonly ServerSideContext _context;
         private readonly UserList _context;
 
-        public LoginController(IConfiguration config, ServerSideContext context)
+        public ServerController(IConfiguration config, ServerSideContext context)
         {
             //_context = context;
             _configuration = config;
             _context = UserList.GetInstance();
         }
         [AllowAnonymous]
-        [HttpPost]
+        [HttpPost("Login")]
         public IActionResult Login([Bind("Username,Password")] User user)
         {
             if (Authenricate(user.Username, user.Password) != null)
@@ -56,6 +56,16 @@ namespace ServerSide.Controllers
 
         }
 
+        [HttpPost("Register")]
+        public IActionResult Register([Bind("Username,Password,DisplayName,Image")] User user)
+        {
+            User temp = _context.Items.Where(u => u.Username == user.Username).FirstOrDefault();
+            if (temp != null) return BadRequest("Username Already exists");
+            user.Chats = new List<Chat>();
+            _context.Add(user);
+            return Ok();
+        }
+
 
         [HttpGet("user")]
         public async Task<IActionResult> GetUser()
@@ -69,6 +79,36 @@ namespace ServerSide.Controllers
             return BadRequest("you are not logged in");
 
         }
+
+        [HttpPost("invitations")]
+        public async Task<IActionResult> Invitations([Bind("from,to,server")] ContactTransfer contact)
+        {
+            if (contact.from == null || contact.server == null || contact.to == null)
+                return BadRequest("One or more parameters missing");
+            User user = _context.Items.Where(u => u.Username == contact.to).FirstOrDefault();
+            if (user == null)
+                return BadRequest("user don't exist");
+            Chat chat = new Chat { name = contact.from, displayname = "", server = contact.server, id = _context.ChatId, messages = new List<Message>() };
+            user.Chats.Add(chat);
+            return Ok();
+        }
+
+        [HttpPost("transfer")]
+        public async Task<IActionResult> transfer([Bind("from,to,content")] ContactTransfer contact)
+        {
+            if (contact.from == null || contact.content == null || contact.to == null)
+                return BadRequest("One or more parameters missing");
+            User user = _context.Items.Where(u => u.Username == contact.to).FirstOrDefault();
+            if (user == null)
+                return BadRequest("user don't exist");
+            Chat chat = user.Chats.Where(u => u.name == contact.from).FirstOrDefault();
+            if (chat == null)
+                return BadRequest("There is no chat with:" + contact.from);
+            Message message = new Message { sent = false, content = contact.content, created = DateTime.Now, id = _context.MessageId };
+            chat.messages.Add(message);
+            return Ok();
+        }
+
 
         public async Task<User> getCurrentUserAsync()
         {
