@@ -160,81 +160,15 @@ namespace ServerSide.Controllers
             if (chat == null)
                 return NotFound("No such contact");
             message.id = _context.MessageId++;
-            message.sent = false;
+            message.sent = true;
             message.created = DateTime.Now;
             if (chat.messages == null)
                 chat.messages = new List<Message>();
             chat.messages.Add(message);
             return Ok();
         }
-        ///////////////////////////////////
-        [HttpGet("{id}/messages/{id2}")]
-        public async Task<IActionResult> ViewSpecificMessage(string id, int id2)
-        {
-             if (id == null)
-            {
-                return NotFound("id is null");
-            }
-            User curUser = await getCurrentUserAsync();
-            if (curUser == null)
-                return BadRequest("You are not logged in");
 
-             Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
-            //if (chat == null)
-              //  return NotFound("No such contact");
-            if (chat.messages == null)
-                return NotFound("No message with that id");
-            return Json(chat.messages.Where(m=>m.id==id2));   
-        }
-        [HttpPut("{id}/messages/{id2}")]
-        public async Task<IActionResult> UpdateSpecificMessage(string id, [Bind("id2,content")] Message message)
-        {
-          
-            if (id == null)
-            {
-                return NotFound("id is null");
-            }
-            User curUser = await getCurrentUserAsync();
-            if (curUser == null)
-                return BadRequest("You are not logged in");
-            
-            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
-            if (chat.messages == null)
-                return NotFound("No User with that id");
-
-           Message msg  = chat.messages.Where(m => m.id == message.id).FirstOrDefault();
-            if(msg==null)
-                return NotFound("No Message with that id");
-
-            msg.content = message.content;
-            return Ok();
-
-
-        }
-        [HttpDelete("{id}/messages/{id2}")]
-        public async Task<IActionResult> DeleteSpecificMwssage(string id,int id2)
-        {
-            if (id == null)
-            {
-                return NotFound("id is null");
-            }
-            User curUser = await getCurrentUserAsync();
-            if (curUser == null)
-                return BadRequest("You are not logged in");
-
-            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
-            Message msg = chat.messages.Where(m => m.id == id2).FirstOrDefault();
-            
-            chat.messages.Remove(msg);
-            return Ok();
-
-        }
-
-
-
-
-
-        private async Task<User> getCurrentUserAsync()
+        public async Task<User> getCurrentUserAsync()
         {
             var user = HttpContext.User.Identity as ClaimsIdentity;
             if (user.IsAuthenticated == true)
@@ -264,7 +198,5 @@ namespace ServerSide.Controllers
             }
             return temp;
         }
-
-
     }
 }

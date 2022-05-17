@@ -12,7 +12,6 @@ namespace ServerSide.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required]
         public string DisplayName { get; set; }
 
         public string Image { get; set; }
