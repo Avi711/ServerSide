@@ -51,7 +51,7 @@ namespace ServerSide.Controllers
             }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
-                return BadRequest("You are not logged in");
+                return NotFound("You are not logged in");
             Chat chat = curUser.Chats.Where(chat => chat.name == id).FirstOrDefault();
             if (chat == null)
                 return NotFound("No such contact");
@@ -82,7 +82,7 @@ namespace ServerSide.Controllers
             curUser.Chats.Add(chat);
             //await _context.Chat.AddAsync(chat);
             //await _context.SaveChangesAsync();
-            return Ok();
+            return Created("", contact);
         }
 
         [HttpPut("{id}")]
@@ -94,7 +94,7 @@ namespace ServerSide.Controllers
             }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
-                return BadRequest("You are not logged in");
+                return NotFound("You are not logged in");
 
             Chat chat = curUser.Chats.Where(c => c.name == contact.id).FirstOrDefault();
             if (chat == null)
@@ -104,7 +104,7 @@ namespace ServerSide.Controllers
             if (contact.server != null)
                 chat.server = contact.server;
             //await _context.SaveChangesAsync();
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
@@ -122,7 +122,7 @@ namespace ServerSide.Controllers
             if(chat == null)
                 return NotFound("There is no such user");
             curUser.Chats.Remove(chat);
-            return Ok();
+            return NoContent();
         }
 
 
@@ -165,8 +165,72 @@ namespace ServerSide.Controllers
             if (chat.messages == null)
                 chat.messages = new List<Message>();
             chat.messages.Add(message);
-            return Ok();
+            return Created("", message);
         }
+
+        [HttpGet("{id}/messages/{id2}")]
+        public async Task<IActionResult> ViewSpecificMessage(string id, int id2)
+        {
+            if (id == null)
+            {
+                return NotFound("id is null");
+            }
+            User curUser = await getCurrentUserAsync();
+            if (curUser == null)
+                return BadRequest("You are not logged in");
+
+            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+            //if (chat == null)
+            //  return NotFound("No such contact");
+            if (chat.messages == null)
+                return NotFound("No message with that id");
+            return Json(chat.messages.Where(m => m.id == id2));
+        }
+
+        [HttpPut("{id}/messages/{id2}")]
+        public async Task<IActionResult> UpdateSpecificMessage(string id, [Bind("id2,content")] Message message)
+        {
+
+            if (id == null)
+            {
+                return NotFound("id is null");
+            }
+            User curUser = await getCurrentUserAsync();
+            if (curUser == null)
+                return BadRequest("You are not logged in");
+
+            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+            if (chat.messages == null)
+                return NotFound("No User with that id");
+
+            Message msg = chat.messages.Where(m => m.id == message.id).FirstOrDefault();
+            if (msg == null)
+                return NotFound("No Message with that id");
+
+            msg.content = message.content;
+            return NoContent();
+
+
+        }
+        [HttpDelete("{id}/messages/{id2}")]
+        public async Task<IActionResult> DeleteSpecificMwssage(string id, int id2)
+        {
+            if (id == null)
+            {
+                return NotFound("id is null");
+            }
+            User curUser = await getCurrentUserAsync();
+            if (curUser == null)
+                return BadRequest("You are not logged in");
+
+            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+            Message msg = chat.messages.Where(m => m.id == id2).FirstOrDefault();
+
+            chat.messages.Remove(msg);
+            return NoContent();
+
+        }
+
 
         public async Task<User> getCurrentUserAsync()
         {

@@ -88,7 +88,7 @@ namespace ServerSide.Controllers
             User user = _context.Items.Where(u => u.Username == contact.to).FirstOrDefault();
             if (user == null)
                 return BadRequest("user don't exist");
-            Chat chat = new Chat { name = contact.from, displayname = "", server = contact.server, id = _context.ChatId, messages = new List<Message>() };
+            Chat chat = new Chat { name = contact.from, displayname = contact.from, server = contact.server, id = _context.ChatId++, messages = new List<Message>() };
             user.Chats.Add(chat);
             return Ok();
         }
@@ -104,7 +104,7 @@ namespace ServerSide.Controllers
             Chat chat = user.Chats.Where(u => u.name == contact.from).FirstOrDefault();
             if (chat == null)
                 return BadRequest("There is no chat with:" + contact.from);
-            Message message = new Message { sent = false, content = contact.content, created = DateTime.Now, id = _context.MessageId };
+            Message message = new Message { sent = false, content = contact.content, created = DateTime.Now, id = _context.MessageId++ };
             chat.messages.Add(message);
             return Ok();
         }
