@@ -27,15 +27,17 @@ namespace ServerSide.Models
             chat1.messages.Add(new Message { id = 4, created = DateTime.Now, sent = false, content = "I am fine thank you" });
             avi.Chats.Add(chat1);
 
-
             Chat chat2 = new Chat { id = 1, displayname = "gal", server = "local2", name = "galll", messages = new List<Message>() };
             chat2.messages.Add(new Message { id = 5, created = DateTime.Now, sent = true, content = "hi gal" });
             chat2.messages.Add(new Message { id = 6, created = DateTime.Now, sent = false, content = "hi Avi" });
             chat2.messages.Add(new Message { id = 7, created = DateTime.Now, sent = true, content = "how are you gal?" });
             chat2.messages.Add(new Message { id = 8, created = DateTime.Now, sent = false, content = "I am fine thank you :)" });
             avi.Chats.Add(chat2);
-
             this.Add(avi);
+
+
+            User dan = new User { Username = "dan711", Password = "12345678a", DisplayName = "daiiii", Image = "profile2.png", Chats = new List<Chat>() };
+            this.Add(dan);
         }
 
         
