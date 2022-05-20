@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ServerSide.Hubs;
+using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,14 +43,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 }
     );
 
+builder.Services.AddSingleton<IDictionary<string, string>>(opt => new Dictionary<string, string>());
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Allow All", builder =>
      {
-         builder
-           .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+         //builder
+         //  .AllowAnyOrigin()
+         //   .AllowAnyMethod()
+         //   .AllowAnyHeader();
+         builder.WithOrigins("http://localhost:3000")
+         .AllowAnyHeader()
+         .AllowAnyMethod()
+         .AllowCredentials();
 
      });
 });
