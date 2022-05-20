@@ -104,6 +104,8 @@ namespace ServerSide.Controllers
             Chat chat = user.Chats.Where(u => u.name == contact.from).FirstOrDefault();
             if (chat == null)
                 return BadRequest("There is no chat with:" + contact.from);
+            if (chat.messages == null)
+                chat.messages = new List<Message>();
             Message message = new Message { sent = false, content = contact.content, created = DateTime.Now, id = _context.MessageId++ };
             chat.messages.Add(message);
             return Ok();
