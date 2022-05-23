@@ -39,14 +39,14 @@ namespace ServerSide.Models
             
 
 
-            Chat chat3 = new Chat { id = 2, displayname = "avi", server = "local2", name = "avi711", messages = new List<Message>() };
+            Chat chat3 = new Chat { id = 2, displayname = "avi", server = "local2", name = "avi77", messages = new List<Message>() };
             chat3.messages.Add(new Message { id = 9, created = DateTime.Now, sent = false, content = "hi shirin" });
             chat3.messages.Add(new Message { id = 10, created = DateTime.Now, sent = true, content = "hi Avi" });
             chat3.messages.Add(new Message { id = 11, created = DateTime.Now, sent = false, content = "how are you shirin?" });
             chat3.messages.Add(new Message { id = 12, created = DateTime.Now, sent = true, content = "I am fine thank you :)" });
 
 
-            Chat chat4 = new Chat { id = 3, displayname = "avi", server = "local2", name = "avi711", messages = new List<Message>() };
+            Chat chat4 = new Chat { id = 3, displayname = "avi", server = "local2", name = "avi77", messages = new List<Message>() };
             chat4.messages.Add(new Message { id = 13, created = DateTime.Now, sent = false, content = "hi or" });
             chat4.messages.Add(new Message { id = 14, created = DateTime.Now, sent = true, content = "hi Avi" });
             chat4.messages.Add(new Message { id = 15, created = DateTime.Now, sent = false, content = "how are you or?" });
