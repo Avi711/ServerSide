@@ -90,7 +90,7 @@ namespace ServerSide.Controllers
                 return BadRequest("user don't exist");
             Chat chat = new Chat { name = contact.from, displayname = contact.from, server = contact.server, id = _context.ChatId++, messages = new List<Message>() };
             user.Chats.Add(chat);
-            return Ok();
+            return Created("", chat);
         }
 
         [HttpPost("transfer")]
@@ -108,7 +108,7 @@ namespace ServerSide.Controllers
                 chat.messages = new List<Message>();
             Message message = new Message { sent = false, content = contact.content, created = DateTime.Now, id = _context.MessageId++ };
             chat.messages.Add(message);
-            return Ok();
+            return Created("", message);
         }
 
 
