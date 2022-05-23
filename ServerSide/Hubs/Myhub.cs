@@ -19,7 +19,16 @@ namespace ServerSide.Hubs
             {
                 await Clients.Client(_connections[receiver]).SendAsync("ChangeRecieved", message, sender);
                 //await Clients.AllExcept(Context.ConnectionId).SendAsync("ChangeRecieved", message, sender);
+            }
+        }
 
+        public async Task ChangedContact(string contactId, string receiver)
+        {
+            string x = Context.ConnectionId;
+            if (_connections.ContainsKey(receiver))
+            {
+                await Clients.Client(_connections[receiver]).SendAsync("addContact", contactId);
+                //await Clients.AllExcept(Context.ConnectionId).SendAsync("ChangeRecieved", message, sender);
             }
         }
 
