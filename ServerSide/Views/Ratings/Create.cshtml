@@ -27,17 +27,19 @@
             </div>
             <div class="form-group">
                 <label asp-for="rate" class="control-label"></label>
-                <input asp-for="rate" class="form-control" />
+               @* <input asp-for="rate" class="form-control" />*@
                 <span asp-validation-for="rate" class="text-danger"></span>
+                <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+                <h1 className="stars-rating"></h1>
+                <div class="product-review-stars">
+                    <input type="radio" id="star5" name="rate" value="5" class="visuallyhidden" /><label for="star5">★</label>
+                    <input type="radio" id="star4" name="rate" value="4" class="visuallyhidden" /><label for="star4">★</label>
+                    <input type="radio" id="star3" name="rate" value="3" class="visuallyhidden" /><label for="star3">★</label>
+                    <input type="radio" id="star2" name="rate" value="2" class="visuallyhidden" /><label for="star2">★</label>
+                    <input type="radio" id="star1" name="rate" value="1" class="visuallyhidden" /><label for="star1">★</label>
+                </div>
+               
             </div>
-@*                <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-                <div class="rating">
-                <input type="radio" name="star" id="star1"/><label class="fa-solid fa-star" for="star1"></label>
-                <input type="radio" name="star" id="star2"/><label class="fa-solid fa-star" for="star2"></label>
-                <input type="radio" name="star" id="star3"/><label class="fa-solid fa-star" for="star3"></label>
-                <input type="radio" name="star" id="star4"/><label class="fa-solid fa-star" for="star4"></label>
-                <input type="radio" name="star" id="star5"/><label class="fa-solid fa-star" for="star5"></label>
-            </div>*@
             <br />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

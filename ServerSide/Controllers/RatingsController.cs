@@ -111,7 +111,7 @@ namespace ServerSide.Controllers
             {
                 try
                 {
-                    _context.Edit(id, rating.Comment, rating.rate);
+                    _context.Edit(id,rating.Name, rating.Comment, rating.rate);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

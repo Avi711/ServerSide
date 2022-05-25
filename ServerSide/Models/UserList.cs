@@ -24,33 +24,33 @@ namespace ServerSide.Models
 
 
             Chat chat1 = new Chat { id = 0, displayname = "or", server = "local2", name = "or77", messages = new List<Message>() };
-            chat1.messages.Add(new Message { id = 1, created = DateTime.Now, sent = true, content = "hi shirin" });
-            chat1.messages.Add(new Message { id = 2, created = DateTime.Now, sent = false, content = "hi Avi" });
-            chat1.messages.Add(new Message { id = 3, created = DateTime.Now, sent = true, content = "how are you or?" });
-            chat1.messages.Add(new Message { id = 4, created = DateTime.Now, sent = false, content = "I am fine thank you" });
+            chat1.messages.Add(new Message { id = 1, created = DateTime.Today.AddDays(-5), sent = true, content = "hi shirin" });
+            chat1.messages.Add(new Message { id = 2, created = DateTime.Today.AddDays(-5), sent = false, content = "hi Avi" });
+            chat1.messages.Add(new Message { id = 3, created = DateTime.Today.AddDays(-5), sent = true, content = "how are you or?" });
+            chat1.messages.Add(new Message { id = 4, created = DateTime.Today.AddDays(-5), sent = false, content = "I am fine thank you" });
             
 
             Chat chat2 = new Chat { id = 1, displayname = "shirin", server = "local2", name = "shirin77", messages = new List<Message>() };
-            chat2.messages.Add(new Message { id = 5, created = DateTime.Now, sent = true, content = "hi gal" });
-            chat2.messages.Add(new Message { id = 6, created = DateTime.Now, sent = false, content = "hi Avi" });
-            chat2.messages.Add(new Message { id = 7, created = DateTime.Now, sent = true, content = "how are you gal?" });
-            chat2.messages.Add(new Message { id = 8, created = DateTime.Now, sent = false, content = "I am fine thank you :)" });
+            chat2.messages.Add(new Message { id = 5, created = DateTime.Today.AddDays(-5), sent = true, content = "hi gal" });
+            chat2.messages.Add(new Message { id = 6, created = DateTime.Today.AddDays(-5), sent = false, content = "hi Avi" });
+            chat2.messages.Add(new Message { id = 7, created = DateTime.Today.AddDays(-5), sent = true, content = "how are you gal?" });
+            chat2.messages.Add(new Message { id = 8, created = DateTime.Today.AddDays(-5), sent = false, content = "I am fine thank you :)" });
             
             
 
 
             Chat chat3 = new Chat { id = 2, displayname = "avi", server = "local2", name = "avi77", messages = new List<Message>() };
-            chat3.messages.Add(new Message { id = 9, created = DateTime.Now, sent = false, content = "hi shirin" });
-            chat3.messages.Add(new Message { id = 10, created = DateTime.Now, sent = true, content = "hi Avi" });
-            chat3.messages.Add(new Message { id = 11, created = DateTime.Now, sent = false, content = "how are you shirin?" });
-            chat3.messages.Add(new Message { id = 12, created = DateTime.Now, sent = true, content = "I am fine thank you :)" });
+            chat3.messages.Add(new Message { id = 9, created = DateTime.Today.AddDays(-5), sent = false, content = "hi shirin" });
+            chat3.messages.Add(new Message { id = 10, created = DateTime.Today.AddDays(-5), sent = true, content = "hi Avi" });
+            chat3.messages.Add(new Message { id = 11, created = DateTime.Today.AddDays(-5), sent = false, content = "how are you shirin?" });
+            chat3.messages.Add(new Message { id = 12, created = DateTime.Today.AddDays(-5), sent = true, content = "I am fine thank you :)" });
 
 
             Chat chat4 = new Chat { id = 3, displayname = "avi", server = "local2", name = "avi77", messages = new List<Message>() };
-            chat4.messages.Add(new Message { id = 13, created = DateTime.Now, sent = false, content = "hi or" });
-            chat4.messages.Add(new Message { id = 14, created = DateTime.Now, sent = true, content = "hi Avi" });
-            chat4.messages.Add(new Message { id = 15, created = DateTime.Now, sent = false, content = "how are you or?" });
-            chat4.messages.Add(new Message { id = 16, created = DateTime.Now, sent = true, content = "I am fine thank you" });
+            chat4.messages.Add(new Message { id = 13, created = DateTime.Today.AddDays(-5), sent = false, content = "hi or" });
+            chat4.messages.Add(new Message { id = 14, created = DateTime.Today.AddDays(-5), sent = true, content = "hi Avi" });
+            chat4.messages.Add(new Message { id = 15, created = DateTime.Today.AddDays(-5), sent = false, content = "how are you or?" });
+            chat4.messages.Add(new Message { id = 16, created = DateTime.Today.AddDays(-5), sent = true, content = "I am fine thank you" });
 
 
             avi.Chats.Add(chat1);
