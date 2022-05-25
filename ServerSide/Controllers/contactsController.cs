@@ -257,7 +257,8 @@ namespace ServerSide.Controllers
                 if (chat.messages != null && chat.messages.Count > 0)
                 {
                     temp.last = chat.messages.LastOrDefault().content;
-                    temp.lastdate = chat.messages.FirstOrDefault().created;
+                    temp.lastdate = chat.messages.LastOrDefault().created;
+                    
                 }
             }
             return temp;

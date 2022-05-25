@@ -12,7 +12,7 @@ namespace ServerSide.Services
 
         public void Create(string comment, string name, int rate);
 
-        public void Edit(int id, string comment, int rate);
+        public void Edit(int id,string name, string comment, int rate);
         public void Delete(int id);
 
 

@@ -10,7 +10,7 @@ namespace ServerSide.Models
         public string Comment { get; set; }
 
         [Display(Name ="Published Date")]
-        public DateTime PublishedDate { get; set; }
+        public String PublishedDate { get; set; }
 
         public string Name { get; set; }
 

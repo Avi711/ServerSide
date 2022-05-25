@@ -82,7 +82,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Users}/{action=Index}/{id?}");
+    pattern: "{controller=Ratings}/{action=Index}/{id?}");
 
 app.UseEndpoints(endpoints =>
 {
