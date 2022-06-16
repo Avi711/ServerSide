@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ServerSide.Data;
@@ -19,7 +20,7 @@ namespace ServerSide.Controllers
     public class ServerController : Controller 
     {
         public IConfiguration _configuration;
-        //private readonly ServerSideContext _context;
+        private readonly ServerSideContext _context2;
         private readonly UserList _context;
 
         public ServerController(IConfiguration config, ServerSideContext context)
@@ -27,6 +28,7 @@ namespace ServerSide.Controllers
             //_context = context;
             _configuration = config;
             _context = UserList.GetInstance();
+            _context2 = context;
         }
         [AllowAnonymous]
         [HttpPost("Login")]
@@ -59,10 +61,13 @@ namespace ServerSide.Controllers
         [HttpPost("Register")]
         public IActionResult Register([Bind("Username,Password,DisplayName,Image")] User user)
         {
-            User temp = _context.Items.Where(u => u.Username == user.Username).FirstOrDefault();
+            //User temp = _context.Items.Where(u => u.Username == user.Username).FirstOrDefault();
+            User temp = _context2.User.FirstOrDefault(u => u.Username == user.Username);
             if (temp != null) return BadRequest("Username Already exists");
             user.Chats = new List<Chat>();
-            _context.Add(user);
+            //_context.Add(user);
+            _context2.Add(user);
+            _context2.SaveChanges();
             return Ok();
         }
 
@@ -85,11 +90,13 @@ namespace ServerSide.Controllers
         {
             if (contact.from == null || contact.server == null || contact.to == null)
                 return BadRequest("One or more parameters missing");
-            User user = _context.Items.Where(u => u.Username == contact.to).FirstOrDefault();
+            //User user = _context.Items.Where(u => u.Username == contact.to).FirstOrDefault();
+            User user = _context2.User.Where(u => u.Username == contact.to).Include(x => x.Chats).FirstOrDefault();
             if (user == null)
                 return BadRequest("user don't exist");
-            Chat chat = new Chat { name = contact.from, displayname = contact.from, server = contact.server, id = _context.ChatId++, messages = new List<Message>() };
+            Chat chat = new Chat { name = contact.from, displayname = contact.from, server = contact.server, messages = new List<Message>() };
             user.Chats.Add(chat);
+            _context2.SaveChanges();
             return Created("", chat);
         }
 
@@ -98,16 +105,19 @@ namespace ServerSide.Controllers
         {
             if (contact.from == null || contact.content == null || contact.to == null)
                 return BadRequest("One or more parameters missing");
-            User user = _context.Items.Where(u => u.Username == contact.to).FirstOrDefault();
+            //User user = _context.Items.Where(u => u.Username == contact.to).FirstOrDefault();
+            User user = _context2.User.Where(u => u.Username == contact.to).Include(x => x.Chats).FirstOrDefault();
             if (user == null)
                 return BadRequest("user don't exist");
             Chat chat = user.Chats.Where(u => u.name == contact.from).FirstOrDefault();
             if (chat == null)
                 return BadRequest("There is no chat with:" + contact.from);
-            if (chat.messages == null)
-                chat.messages = new List<Message>();
-            Message message = new Message { sent = false, content = contact.content, created = DateTime.Now, id = _context.MessageId++ };
-            chat.messages.Add(message);
+            Chat chat2 = _context2.Chat.Where(c => c.id == chat.id).Include(x => x.messages).FirstOrDefault();
+            if (chat2.messages == null)
+                chat2.messages = new List<Message>();
+            Message message = new Message { sent = false, content = contact.content, created = DateTime.Now};
+            chat2.messages.Add(message);
+            _context2.SaveChanges();
             return Created("", message);
         }
 
@@ -119,9 +129,8 @@ namespace ServerSide.Controllers
             {
                 var userClaims = user.Claims;
                 string name = userClaims.FirstOrDefault(o => o.Type == "UserId").Value;
-                // return await _context.User.Where(u => u.Username == name).Include(x => x.Chats).FirstOrDefaultAsync();
-                return _context.Items.Where(u => u.Username == name).FirstOrDefault();
-
+                 return _context2.User.Where(u => u.Username == name).Include(x => x.Chats).FirstOrDefault();
+                //return _context.Items.Where(u => u.Username == name).FirstOrDefault();
             }
             return null;
         }
@@ -129,10 +138,10 @@ namespace ServerSide.Controllers
         private User Authenricate(string username, string password)
         {
             if (username == null || password == null) return null;
-            //var curUser = _context.User.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() &&
+            //var curUser = _context.Items.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() &&
             //                                                u.Password == password);
-            var curUser = _context.Items.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() &&
-                                                            u.Password == password);
+            var curUser = _context2.User.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() &&
+                                                             (u.Password == password));      
             if (curUser != null)
                 return curUser;
             return null;

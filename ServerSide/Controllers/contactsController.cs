@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServerSide.Data;
 using ServerSide.Models;
+using ServerSide.Services;
 
 namespace ServerSide.Controllers
 {
@@ -17,11 +18,16 @@ namespace ServerSide.Controllers
     public class ContactsController : Controller
     {
         private readonly UserList _context;
+        private readonly IContactService _service;
+        private readonly ServerSideContext _context2;
 
         public ContactsController(ServerSideContext context)
         {
             //_context = context;
             _context = UserList.GetInstance();
+            _service = new ContactService(context);
+            _context2 = context;
+
         }
 
         [HttpGet]
@@ -30,14 +36,7 @@ namespace ServerSide.Controllers
             User curUser = await getCurrentUserAsync();
             if (curUser != null)
             {
-                List <Contact> contacts = new List<Contact>();
-
-                curUser.Chats.ForEach(c =>
-                {
-                    contacts.Add(buildContact(c));
-                });
-
-                return Json(contacts);
+                return Json(_service.GetAllContacts(curUser));
             }
             return BadRequest("You are not logged in");
         }
@@ -45,18 +44,13 @@ namespace ServerSide.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> ContactDetails(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return NotFound("You are not logged in");
-            Chat chat = curUser.Chats.Where(chat => chat.name == id).FirstOrDefault();
-            if (chat == null)
+            Contact contact = _service.ContactDetails(curUser, id);
+            if(contact == null)
                 return NotFound("No such contact");
-            return Json(buildContact(chat));
-
+            return Json(contact);
         }
 
 
@@ -67,61 +61,74 @@ namespace ServerSide.Controllers
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return BadRequest("You are not logged in");
-            Chat c = curUser.Chats.Where(c => c.name == contact.id).FirstOrDefault();
-            if (c != null)
-                return BadRequest("Contact Already exists");
-            Chat chat = new Chat();
-            int nextId = _context.ChatId++;
+
+
+            // Chat c = curUser.Chats.Where(c => c.name == contact.id).FirstOrDefault();
+            // if (c != null)
+            //     return BadRequest("Contact Already exists");
+            // Chat chat = new Chat();
+            // int nextId = _context.ChatId++;
             //if (_context.Chat.CountAsync().Result > 0)
             //    nextId = _context.Chat.MaxAsync(x => x.id).Id + 1;
 
-            chat.id = nextId;
-            chat.name = contact.id;
-            chat.displayname = contact.name;
-            chat.server = contact.server;
-            curUser.Chats.Add(chat);
+            // chat.id = nextId;
+            // chat.name = contact.id;
+            // chat.displayname = contact.name;
+            // chat.server = contact.server;
+            //  curUser.Chats.Add(chat);
             //await _context.Chat.AddAsync(chat);
             //await _context.SaveChangesAsync();
-            return Created("", contact);
+
+            Contact contact1 = _service.CreateContact(curUser, contact);
+            if (contact1 != null)
+                return Created("", contact);
+            return BadRequest();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditContact([Bind("id,name,server")] Contact contact)
+        public async Task<IActionResult> EditContact(string id, [Bind("name,server")] Contact contact)
         {
-            if (contact.id == null)
-            {
-                return NotFound();
-            }
+          //  if (contact.id == null)
+          //  {
+          //      return NotFound();
+          //  }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return NotFound("You are not logged in");
 
-            Chat chat = curUser.Chats.Where(c => c.name == contact.id).FirstOrDefault();
-            if (chat == null)
-                return NotFound("No such contact");
-            if (contact.name != null)
-                chat.displayname = contact.name;
-            if (contact.server != null)
-                chat.server = contact.server;
-            //await _context.SaveChangesAsync();
-            return NoContent();
+            //  Chat chat = curUser.Chats.Where(c => c.name == contact.id).FirstOrDefault();
+            //  if (chat == null)
+            //      return NotFound("No such contact");
+            //  if (contact.name != null)
+            //      chat.displayname = contact.name;
+            //  if (contact.server != null)
+            //      chat.server = contact.server;
+            //  return NoContent();
+
+            Contact contact1 = _service.EditContact(curUser,id, contact);
+            if (contact1 != null)
+                return NoContent();
+            return NotFound();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteContact(string id)
         {
 
-            if (id == null)
-            {
-                return NotFound("id is null");
-            }
+         //   if (id == null)
+         //   {
+         //       return NotFound("id is null");
+         //   }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
-                return BadRequest("You are not logged in");
-            Chat chat = curUser.Chats.Where(u => u.name == id).FirstOrDefault();
-            if(chat == null)
+                 return BadRequest("You are not logged in");
+            //Chat chat = curUser.Chats.Where(u => u.name == id).FirstOrDefault();
+            // if(chat == null)
+            //     return NotFound("There is no such user");
+            // curUser.Chats.Remove(chat);
+
+            if (_service.DeleteContact(curUser, id) == -1)
                 return NotFound("There is no such user");
-            curUser.Chats.Remove(chat);
             return NoContent();
         }
 
@@ -129,105 +136,123 @@ namespace ServerSide.Controllers
         [HttpGet("{id}/messages")]
         public async Task<IActionResult> GetAllMessages(string id)
         {
-            if (id == null)
-            {
-                return NotFound("id is null");
-            }
-            User curUser = await getCurrentUserAsync();
-            if (curUser == null)
+           //  if (id == null)
+           //  {
+          //       return NotFound("id is null");
+           //  }
+             User curUser = await getCurrentUserAsync();
+             if (curUser == null)
                 return BadRequest("You are not logged in");
 
-            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
-            if (chat == null)
-                return NotFound("No such contact");
-            if (chat.messages == null)
-                return Json(new List<Message>());
-            return Json(chat.messages);
+           //  Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+           //  if (chat == null)
+            //     return NotFound("No such contact");
+           //  if (chat.messages == null)
+           //     return Json(new List<Message>());
+           //  return Json(chat.messages);
+
+            List<Message> messages = _service.GetAllMessages(curUser, id);
+            if (messages != null)
+                return Json(messages);
+            return BadRequest();
+
         }
 
         [HttpPost("{id}/messages")]
         public async Task<IActionResult> CreateMessage(string id, [Bind("content")] Message message)
         {
-            if (id == null)
-            {
-                return NotFound("id is null");
-            }
+           // if (id == null)
+           // {
+           //     return NotFound("id is null");
+           // }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return BadRequest("You are not logged in");
 
-            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
-            if (chat == null)
-                return NotFound("No such contact");
-            message.id = _context.MessageId++;
-            message.sent = true;
-            message.created = DateTime.Now;
-            if (chat.messages == null)
-                chat.messages = new List<Message>();
-            chat.messages.Add(message);
-            return Created("", message);
+           // Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+           // if (chat == null)
+           //     return NotFound("No such contact");
+           // message.id = _context.MessageId++;
+           // message.sent = true;
+           // message.created = DateTime.Now;
+           // if (chat.messages == null)
+           //     chat.messages = new List<Message>();
+           // chat.messages.Add(message);
+
+            if(_service.CreateMessage(curUser, id ,message) != null)
+                return Created("", message);
+            return BadRequest();
         }
 
         [HttpGet("{id}/messages/{id2}")]
         public async Task<IActionResult> ViewSpecificMessage(string id, int id2)
         {
-            if (id == null)
-            {
-                return NotFound("id is null");
-            }
+         //   if (id == null)
+         //   {
+         //       return NotFound("id is null");
+         //   }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return BadRequest("You are not logged in");
 
-            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
-            //if (chat == null)
-            //  return NotFound("No such contact");
-            if (chat.messages == null)
-                return NotFound("No message with that id");
-            return Json(chat.messages.Where(m => m.id == id2));
+            //Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+            // if (chat.messages == null)
+            //     return NotFound("No message with that id");
+            // return Json(chat.messages.Where(m => m.id == id2));
+            Message message = _service.ViewSpecificMessage(curUser, id, id2);
+            if (message != null)
+                return Json(message);
+            return NotFound();
         }
 
         [HttpPut("{id}/messages/{id2}")]
-        public async Task<IActionResult> UpdateSpecificMessage(string id, [Bind("id2,content")] Message message)
+        public async Task<IActionResult> UpdateSpecificMessage(string id, int id2, [Bind("content")] Message message)
         {
 
-            if (id == null)
-            {
-                return NotFound("id is null");
-            }
+          //  if (id == null)
+          //  {
+          //      return NotFound("id is null");
+          //  }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return BadRequest("You are not logged in");
+            //   Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+            //  if (chat.messages == null)
+            //      return NotFound("No User with that id");
+            //  Message msg = chat.messages.Where(m => m.id == message.id).FirstOrDefault();
+            //  if (msg == null)
+            //      return NotFound("No Message with that id");
+            //  msg.content = message.content;
+            // return NoContent();
 
-            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
-            if (chat.messages == null)
-                return NotFound("No User with that id");
 
-            Message msg = chat.messages.Where(m => m.id == message.id).FirstOrDefault();
-            if (msg == null)
-                return NotFound("No Message with that id");
-
-            msg.content = message.content;
-            return NoContent();
+            Message message2 = _service.UpdateSpecificMessage(curUser,id,id2, message);
+            if (message2 != null)
+                return NoContent();
+            return NotFound();
 
 
         }
         [HttpDelete("{id}/messages/{id2}")]
         public async Task<IActionResult> DeleteSpecificMwssage(string id, int id2)
         {
-            if (id == null)
-            {
-                return NotFound("id is null");
-            }
+           // if (id == null)
+           // {
+          //      return NotFound("id is null");
+          //  }
             User curUser = await getCurrentUserAsync();
             if (curUser == null)
                 return BadRequest("You are not logged in");
 
-            Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
-            Message msg = chat.messages.Where(m => m.id == id2).FirstOrDefault();
+            //   Chat chat = curUser.Chats.Where(c => c.name == id).FirstOrDefault();
+            //  Message msg = chat.messages.Where(m => m.id == id2).FirstOrDefault();
+            //  chat.messages.Remove(msg);
+            // return NoContent();
 
-            chat.messages.Remove(msg);
-            return NoContent();
+            Message message = _service.DeleteSpecificMwssage(curUser, id, id2);
+            if (message != null)
+                return NoContent();
+            return BadRequest();
 
         }
 
@@ -239,29 +264,10 @@ namespace ServerSide.Controllers
             {
                 var userClaims = user.Claims;
                 string name = userClaims.FirstOrDefault(o => o.Type == "UserId").Value;
-               // return await _context.User.Where(u => u.Username == name).Include(x => x.Chats).FirstOrDefaultAsync();
-                return _context.Items.Where(u => u.Username == name).FirstOrDefault();
-                
+                return _context2.User.Where(u => u.Username == name).Include(x => x.Chats).FirstOrDefault();
+                //return _context.Items.Where(u => u.Username == name).FirstOrDefault();
             }
             return null;
-        }
-
-        private Contact buildContact(Chat chat)
-        {
-            Contact temp = new Contact();
-            if (chat != null)
-            {
-                temp.id = chat.name;
-                temp.name = chat.displayname;
-                temp.server = chat.server;
-                if (chat.messages != null && chat.messages.Count > 0)
-                {
-                    temp.last = chat.messages.LastOrDefault().content;
-                    temp.lastdate = chat.messages.LastOrDefault().created;
-                    
-                }
-            }
-            return temp;
         }
     }
 }
