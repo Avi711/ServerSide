@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ServerSide.Hubs;
 using System.Collections.Generic;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +64,12 @@ builder.Services.AddCors(options =>
 });
 
 
+FirebaseApp.Create(new AppOptions()
+{
+    //Credential = GoogleCredential.FromAccessToken(google_token),
+    Credential = GoogleCredential.FromFile("private_key.json"),
+
+});
 
 var app = builder.Build();
 

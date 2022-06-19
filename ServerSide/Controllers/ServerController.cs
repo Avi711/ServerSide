@@ -12,6 +12,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using FirebaseAdmin.Messaging;
+using Message = ServerSide.Models.Message;
 
 namespace ServerSide.Controllers
 {
@@ -21,21 +25,27 @@ namespace ServerSide.Controllers
     {
         public IConfiguration _configuration;
         private readonly ServerSideContext _context2;
+        private IDictionary<string, string> _androidConnections;
         private readonly UserList _context;
 
-        public ServerController(IConfiguration config, ServerSideContext context)
+        public ServerController(IConfiguration config, ServerSideContext context, IDictionary<string, string> connections)
         {
             //_context = context;
             _configuration = config;
             _context = UserList.GetInstance();
             _context2 = context;
+            _androidConnections = connections;
         }
         [AllowAnonymous]
         [HttpPost("Login")]
-        public IActionResult Login([Bind("Username,Password")] User user)
+        public IActionResult Login([Bind("Username,Password,FirebaseToken")] User user)
         {
             if (Authenricate(user.Username, user.Password) != null)
             {
+                if(user.FirebaseToken != null)
+                {
+                    _androidConnections[user.Username] = user.FirebaseToken;
+                }
                 var claims = new[]
                 {
                 new Claim(JwtRegisteredClaimNames.Sub,_configuration["JWTParams:Subject"]),
@@ -118,6 +128,10 @@ namespace ServerSide.Controllers
             Message message = new Message { sent = false, content = contact.content, created = DateTime.Now};
             chat2.messages.Add(message);
             _context2.SaveChanges();
+            if (_androidConnections.ContainsKey(contact.to))
+            {
+                sendFirebaseMessage(contact.from,_androidConnections[contact.to], contact.content);
+            }
             return Created("", message);
         }
 
@@ -145,6 +159,26 @@ namespace ServerSide.Controllers
             if (curUser != null)
                 return curUser;
             return null;
+        }
+
+        private void setupFirebase()
+        {
+            
+        }
+        private void sendFirebaseMessage(String from, String token, String content)
+        {
+            var message = new FirebaseAdmin.Messaging.Message()
+            {
+                Data = new Dictionary<string, string>() { { "myData", "1337" } },
+                Token = token,
+                Notification = new Notification()
+                {
+                    Title = "New message from " + from,
+                    Body = content
+                }
+            };
+            FirebaseMessaging.DefaultInstance.SendAsync(message);
+
         }
     }
 
