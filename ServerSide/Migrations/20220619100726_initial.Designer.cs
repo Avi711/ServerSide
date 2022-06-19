@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServerSide.Data;
 
@@ -11,9 +12,10 @@ using ServerSide.Data;
 namespace ServerSide.Migrations
 {
     [DbContext(typeof(ServerSideContext))]
-    partial class ServerSideContextModelSnapshot : ModelSnapshot
+    [Migration("20220619100726_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
